@@ -9,7 +9,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build tests
+      - name: Build release
         uses: swiftwasm/swiftwasm-action@v5.3
         with:
-          shell-action: carton test
+          shell-action: swift build -c release --triple wasm32-unknown-wasi --build-path build
+      - name: WASM strip
+        uses: swiftwasm/swiftwasm-action@v5.3
+        with:
+          shell-action: wasm-strip build/wasm32-unknown-wasi/release/policy.wasm
+      - name: WASM optimize
+        uses: swiftwasm/swiftwasm-action@v5.3
+        with:
+          shell-action: wasm-opt -Os build/wasm32-unknown-wasi/release/policy.wasm -o policy.wasm
