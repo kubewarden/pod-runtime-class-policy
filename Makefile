@@ -1,5 +1,6 @@
 HYPERFINE := $(shell command -v hyperfine 2> /dev/null)
 CONTAINER_RUNTIME ?= $(shell command -v podman 2> /dev/null || shell command -v docker 2> /de/null)
+CONTAINER_IMAGE := "ghcr.io/swiftwasm/swiftwasm-action:5.3"
 
 .PHONY: deps
 deps:
@@ -11,16 +12,16 @@ endif
 
 .PHONY: build
 build: deps
-	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code ghcr.io/swiftwasm/swift sh -c "cd /code && swift build --triple wasm32-unknown-wasi"
+	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && swift build --triple wasm32-unknown-wasi"
 
 .PHONY: release
 release: deps
-	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code ghcr.io/swiftwasm/swift sh -c "cd /code && swift build -c release --triple wasm32-unknown-wasi"
-	cp .build/release/policy.wasm .
-
-.PHONY: run
-run: build
-	wasmtime run --env RUNTIME_CLASS=kata .build/debug/policy.wasm
+	@printf "Build release target"
+	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && swift build -c release --triple wasm32-unknown-wasi"
+	@printf "Strip WASM binary"
+	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && wasm-strip .build/wasm32-unknown-wasi/release/policy.wasm"
+	@printf "Optimize WASM binary, hold on..."
+	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && wasm-opt -Os .build/wasm32-unknown-wasi/release/policy.wasm -o policy.wasm"
 
 .PHONY: clean
 clean:
@@ -28,8 +29,7 @@ clean:
 
 .PHONY: test
 test: deps
-	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code ghcr.io/swiftwasm/swift sh -c "cd /code && swift build --build-tests --triple wasm32-unknown-wasi"
-	wasmtime .build/debug/pod-runtime-class-policyPackageTests.wasm
+	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && carton test"
 
 .PHONY: bench
 bench: release
