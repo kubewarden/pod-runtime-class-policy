@@ -1,0 +1,46 @@
+on:
+  push:
+    tags:
+    - 'v*'
+
+name: release
+
+jobs:
+  build:
+    name: Create new release with the WASM artifact
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build release
+        uses: swiftwasm/swiftwasm-action@v5.3
+        with:
+          shell-action: swift build -c release --triple wasm32-unknown-wasi --build-path build
+      - name: WASM strip
+        uses: swiftwasm/swiftwasm-action@v5.3
+        with:
+          shell-action: wasm-strip build/wasm32-unknown-wasi/release/policy.wasm
+      - name: WASM optimize
+        uses: swiftwasm/swiftwasm-action@v5.3
+        with:
+          shell-action: wasm-opt -Os build/wasm32-unknown-wasi/release/policy.wasm -o policy.wasm
+     - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: policy.wasm
+          asset_name: policy.wasm
+          asset_content_type: application/wasm
