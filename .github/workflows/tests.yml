@@ -1,0 +1,15 @@
+on: [push, pull_request]
+
+name: Continuous integration
+
+jobs:
+  build:
+    name: Run unit tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build tests
+        uses: swiftwasm/swiftwasm-action@v5.3
+        with:
+          shell-action: carton test
