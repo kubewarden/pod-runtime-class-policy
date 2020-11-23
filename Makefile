@@ -5,17 +5,17 @@ CONTAINER_IMAGE := "ghcr.io/swiftwasm/swiftwasm-action:5.3"
 
 build:
 ifndef CONTAINER_RUNTIME
-  @printf "Please install either docker or podman"
-  exit 1
+	@printf "Please install either docker or podman"
+	exit 1
 endif
-  $(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && swift build --triple wasm32-unknown-wasi"
+	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && swift build --triple wasm32-unknown-wasi"
 
 test:
 ifndef CONTAINER_RUNTIME
 	@printf "Please install either docker or podman"
 	exit 1
 endif
-	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && carton test"
+	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && carton test"
 
 clean:
 ifndef CONTAINER_RUNTIME
@@ -33,11 +33,11 @@ ifndef CONTAINER_RUNTIME
 	@printf "Please install either docker or podman"
 	exit 1
 endif
-	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && swift build -c release --triple wasm32-unknown-wasi"
+	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && swift build -c release --triple wasm32-unknown-wasi"
 	@printf "Strip WASM binary\n"
-	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && wasm-strip .build/wasm32-unknown-wasi/release/policy.wasm"
+	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && wasm-strip .build/wasm32-unknown-wasi/release/policy.wasm"
 	@printf "Optimize WASM binary, hold on...\n"
-	$(CONTAINER_RUNTIME) run --rm -v `pwd`:/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && wasm-opt -Os .build/wasm32-unknown-wasi/release/policy.wasm -o policy.wasm"
+	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && wasm-opt -Os .build/wasm32-unknown-wasi/release/policy.wasm -o policy.wasm"
 
 bench: policy.wasm
 ifndef HYPERFINE
