@@ -123,6 +123,18 @@ final class ValidateTests: XCTestCase {
       XCTAssert(result.message.isEmpty)
     }
 
+    func testAcceptBecauseNotAPodRequest() {
+      let config = Config(
+        reservedRuntime: "runC",
+        defaultRuntimeReserved: true,
+        trustedUsers: "alice,bob",
+        trustedGroups: "system:masters,trusted-users")
+      let result = validate(rawJSON: NotAPodRequest, config: config)
+
+      XCTAssert(result.accepted)
+      XCTAssert(result.message.isEmpty)
+    }
+
     static var allTests = [
       ("testRejectBecauseUserNotPartOfTrustedUsers", testRejectBecauseUserNotPartOfTrustedUsers),
       ("testRejectBecauseUserNotPartOfTrustedGroups", testRejectBecauseUserNotPartOfTrustedGroups),
@@ -134,5 +146,6 @@ final class ValidateTests: XCTestCase {
       ("testRejectBecauseDefaultRuntimeIsReserved", testRejectBecauseDefaultRuntimeIsReserved),
       ("testAcceptBecauseDefaultRuntimeIsReservedButUserIsTrusted", testAcceptBecauseDefaultRuntimeIsReservedButUserIsTrusted),
       ("testAcceptBecauseDefaultRuntimeIsReservedButBelongsToTrustedGroup", testAcceptBecauseDefaultRuntimeIsReservedButBelongsToTrustedGroup),
+      ("testAcceptBecauseNotAPodRequest", testAcceptBecauseNotAPodRequest),
     ]
 }

@@ -34,6 +34,15 @@ public func validate(rawJSON: String, config: Config) -> ValidationResult {
   let isUserMemberOfTrustedGroup = !groups.isDisjoint(with: config.trustedGroups)
 
   let objDict = reqDict["object"] as! [String: Any]
+  let objKind = objDict["kind"] as! String
+  if objKind != "Pod" {
+    // This request is NOT about a Pod - let's just accept it and move on
+    return ValidationResult(
+      accepted: true,
+      message: "")
+  }
+
+
   let podSpec = objDict["spec"] as! [String: Any]
   let result: ValidationResult
 
