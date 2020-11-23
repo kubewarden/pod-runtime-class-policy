@@ -36,10 +36,78 @@ them.
 The policy can be used to inspect `CREATE` and `UPDATE` requests of
 `Pod` resources.
 
+## Examples
+
+Let's assume our cluster has two Runtime classes defined:
+
+  * `containerd-runc`: containerD uses runC to start containers. This is the
+    default runtime class. Workloads that do not specify a Runtime class
+    will automatically use it.
+  * `containerd-kata`: containerD uses the Kata Containers runtime to
+    start containers.
+
+Let's assume we have two set of users who have access to this cluser:
+
+  * `trusted-users`: they can schedule workloads with any kind of runtime class
+  * `untrusted-users`: they can schedule workloads only with the `containerd-kata`
+    runtime
+
+The following Pod specification doesn't have any runtime class specified:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+```
+
+Such a workload should be schedulable only by users who belong to the `trusted-users`
+group.
+
+This Pod specification has instead the runtime class set to be `containerd-runc`:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  runtimeClassName: containerd-runc
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+```
+
+Also in this case, the Pod must be schedulable only by users who belong to the
+`trusted-users` group.
+
+Finally, this Pod specification has instead the runtime class set to be `containerd-kata`:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  runtimeClassName: containerd-kata
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+```
+
+In this case the Pod can be scheduled by all users, regardless of the group they
+belong to.
+
 # Configuration
 
-The policy behaviour can be influenced by setting these settings from the
-environment variables:
+The policy behaviour can be influenced by these environment variables:
 
   * `RESERVED_RUNTIME`: the name of runtime class that should be limited only to
     workloads started by trusted users/groups. Required.
@@ -97,6 +165,11 @@ $ make test
 
 # Benchmark
 
+Some benchmarks can be run via this commnad:
+
 ```
 $ make bench
 ```
+
+The benchmarks rely on [hyperfine](https://github.com/sharkdp/hyperfine). The
+make file will automatically install it using [Cargo](https://doc.rust-lang.org/cargo/).
