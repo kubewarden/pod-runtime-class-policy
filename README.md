@@ -125,7 +125,7 @@ This policy is written using [Swiftwasm](https://book.swiftwasm.org/).
 Build relies on the toolchain provided by the Swiftwasm project via container
 image. Hence either docker or podman have to be installed.
 
-Use this command to build the WASM code in debugging mode:
+Use this command to build the Wasm code in debugging mode:
 
 ```
 $ make build
@@ -141,7 +141,7 @@ $ make release
 
 # Trying the policy
 
-The policy is a stand-alone WASM module, you can invoke it in this way:
+The policy is a stand-alone Wasm module, you can invoke it in this way:
 
 ```bash
 $ cat Tests/Examples/PodRequestWithRuncRuntime.json | wasmtime run --env RESERVED_RUNTIME=runC \

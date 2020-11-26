@@ -5,11 +5,11 @@ on:
     tags:
     - 'v*'
 
-name: publish WASM module
+name: publish Wasm module
 
 jobs:
   build:
-    name: Create new release with the WASM artifact
+    name: Create new release with the Wasm artifact
     runs-on: ubuntu-20.04
     steps:
       -
@@ -33,12 +33,12 @@ jobs:
         with:
           shell-action: swift build -c release --triple wasm32-unknown-wasi --build-path build
       -
-        name: WASM strip
+        name: Wasm strip
         uses: swiftwasm/swiftwasm-action@v5.3
         with:
           shell-action: wasm-strip build/wasm32-unknown-wasi/release/policy.wasm
       -
-        name: WASM optimize
+        name: Wasm optimize
         uses: swiftwasm/swiftwasm-action@v5.3
         with:
           shell-action: wasm-opt -Os build/wasm32-unknown-wasi/release/policy.wasm -o policy.wasm
@@ -50,12 +50,12 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
       -
-        name: Publish WASM policy artifact to OCI registry with the 'latest' tag
+        name: Publish Wasm policy artifact to OCI registry with the 'latest' tag
         if: ${{ startsWith(github.ref, 'refs/heads/') }}
         run: |
           ./linux-amd64-wasm-to-oci push policy.wasm ghcr.io/chimera-kube/policies/pod-runtime:latest
       -
-        name: Publish WASM policy artifact to OCI registry with the version tag
+        name: Publish Wasm policy artifact to OCI registry with the version tag
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           export OCI_TAG=$(echo $GITHUB_REF | sed -e "s|refs/tags/||")
