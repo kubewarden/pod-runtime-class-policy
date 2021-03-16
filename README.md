@@ -1,3 +1,5 @@
+> **WARNING:** this policy is not compatible with the new Policy Server
+
 Continuous integration | License
  -----------------------|--------
 ![Continuous integration](https://github.com/chimera-kube/pod-runtime-class-policy/workflows/Continuous%20integration/badge.svg) | [![License: Apache 2.0](https://img.shields.io/badge/License-Apache2.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
