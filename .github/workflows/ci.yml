@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - main
+    tags:
+    - 'v*'
+  pull_request: {}
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run tests
+        uses: swiftwasm/swiftwasm-action@v5.3
+        with:
+          shell-action: carton test
+
+  e2e-tests:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    env:
+      WASM_BINARY_NAME: policy.wasm
+    steps:
+      #############################
+      # Preparing the environment
+      #############################
+      - uses: actions/checkout@v2
+
+      - name: Download policy-testdrive
+        uses: i3h/download-release-asset@v1
+        with:
+          owner: kubewarden
+          repo: policy-server
+          tag: v0.1.1
+          file: policy-testdrive-linux-amd64
+
+      - name: Setup BATS
+        uses: mig4/setup-bats@v1
+        with:
+          bats-version: 1.2.1
+
+      - name: install wasm-strip
+        run: |
+          export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
+          sudo apt-get -q update
+          sudo apt-get -q install -y wabt binaryen
+
+      #############################
+      # Building the Wasm module
+      #############################
+      - name: Build release
+        uses: swiftwasm/swiftwasm-action@v5.3
+        with:
+          shell-action: swift build -c release --triple wasm32-unknown-wasi --build-path build
+
+      - name: optimize policy
+        run: |
+          # need to fix file permissions because of some issue with Swift Foundation and filesystem
+          sudo chmod 777 build/wasm32-unknown-wasi/release/Policy.wasm
+          wasm-strip build/wasm32-unknown-wasi/release/Policy.wasm
+          wasm-opt -Os build/wasm32-unknown-wasi/release/Policy.wasm -o policy.wasm
+
+      # TODO: uncomment once e2e tests are implemented
+      #############################
+      # Test Wasm module
+      #############################
+      #- name: run e2e tests
+      #  run: |
+      #    chmod 755 policy-testdrive-linux-amd64
+      #    ln -s policy-testdrive-linux-amd64 policy-testdrive
+      #    PATH=${PWD}:${PATH} make e2e-tests
+
+      #############################
+      # Upload policy as an artifact
+      #############################
+      - uses: actions/upload-artifact@v2
+        with:
+          name: policy.wasm
+          path: ${{ env.WASM_BINARY_NAME }}
+          if-no-files-found: error
+

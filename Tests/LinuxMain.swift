@@ -1,7 +1,8 @@
 import XCTest
 
-import PolicyTests
+import BusinessLogicTests
+
 
 var tests = [XCTestCaseEntry]()
-tests += PolicyTests.allTests()
+tests += BusinessLogicTests.allTests()
 XCTMain(tests)
