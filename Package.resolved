@@ -1,0 +1,43 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "GenericJSON",
+        "repositoryURL": "https://github.com/zoul/generic-json-swift.git",
+        "state": {
+          "branch": null,
+          "revision": "a137894b2a217abe489cdf1ea287e6f7819b1051",
+          "version": "2.0.1"
+        }
+      },
+      {
+        "package": "kubewardenSdk",
+        "repositoryURL": "https://github.com/kubewarden/policy-sdk-swift.git",
+        "state": {
+          "branch": null,
+          "revision": "b7840b333d31936d97ce829725a8351f83186dd6",
+          "version": "0.1.4"
+        }
+      },
+      {
+        "package": "SwiftPath",
+        "repositoryURL": "https://github.com/g-mark/SwiftPath.git",
+        "state": {
+          "branch": null,
+          "revision": "76144e5936117ff1a535b7ba686f52daa5bb430a",
+          "version": "0.3.1"
+        }
+      },
+      {
+        "package": "wapc",
+        "repositoryURL": "https://github.com/flavio/wapc-guest-swift.git",
+        "state": {
+          "branch": null,
+          "revision": "018341211e440ab07d9a14d86b43978b748e0ea5",
+          "version": "0.0.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

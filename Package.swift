@@ -5,27 +5,32 @@ import PackageDescription
 
 let package = Package(
     name: "pod-runtime-class-policy",
-    products: [
-        .executable(
-            name: "policy",
-            targets: ["CLI"]),
-    ],
     dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
+        .package(name: "wapc", url: "https://github.com/flavio/wapc-guest-swift.git", from: "0.0.2"),
+        .package(name: "kubewardenSdk", url: "https://github.com/kubewarden/policy-sdk-swift.git", from: "0.1.4"),
+        .package(name: "SwiftPath", url: "https://github.com/g-mark/SwiftPath.git", from: "0.3.1"),
+        .package(name: "GenericJSON", url: "https://github.com/zoul/generic-json-swift.git", from: "2.0.1"),
     ],
     targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
-        .target(
-            name: "CLI",
-            dependencies: ["Policy"]),
+       .target(
+            name: "BusinessLogic",
+            dependencies: ["kubewardenSdk", "SwiftPath", "GenericJSON"]
+        ),
         .target(
             name: "Policy",
-            dependencies: []),
+            dependencies: ["wapc", "BusinessLogic"],
+            linkerSettings: [
+                .unsafeFlags(
+                    [
+                        "-Xlinker",
+                        "--export=__guest_call",
+                    ]
+                )
+            ]
+        ),
         .testTarget(
-            name: "PolicyTests",
-            dependencies: ["Policy"],
+            name: "BusinessLogicTests",
+            dependencies: ["BusinessLogic"],
             resources: [.process("Examples")]),
     ]
 )
