@@ -1,6 +1,6 @@
 Continuous integration | License
  -----------------------|--------
-![Continuous integration](https://github.com/chimera-kube/pod-runtime-class-policy/workflows/Continuous%20integration/badge.svg) | [![License: Apache 2.0](https://img.shields.io/badge/License-Apache2.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
+[![CI](https://github.com/kubewarden/pod-runtime-class-policy/actions/workflows/ci.yml/badge.svg)](https://github.com/kubewarden/pod-runtime-class-policy/actions/workflows/ci.yml) | [![License: Apache 2.0](https://img.shields.io/badge/License-Apache2.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This directory contains a Kubewarden policy written using Swift.
 
