@@ -8,6 +8,7 @@ func __guest_call(operation_size: UInt, payload_size: UInt) -> Bool {
 }
 
 wapc.registerFunction(name: "validate", fn: validate)
+wapc.registerFunction(name: "protocol_version", fn: protocolVersionCallback)
 
 let settingsValidator = SettingsValidator<Settings>()
 wapc.registerFunction(name: "validate_settings", fn: settingsValidator.validate)

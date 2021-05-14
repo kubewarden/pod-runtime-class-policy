@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/kubewarden/policy-sdk-swift.git",
         "state": {
           "branch": null,
-          "revision": "b7840b333d31936d97ce829725a8351f83186dd6",
-          "version": "0.1.4"
+          "revision": "feaf04f18c60174623a13d5938f3a432f387c9a2",
+          "version": "0.1.5"
         }
       },
       {
