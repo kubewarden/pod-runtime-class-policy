@@ -40,3 +40,6 @@ endif
 
 	@printf "Optimize Wasm binary, hold on...\n"
 	wasm-opt -Os .build/wasm32-unknown-wasi/release/Policy.wasm -o policy.wasm
+
+annotate:
+	kwctl annotate -m metadata.yml -o policy-annotated.wasm policy.wasm
