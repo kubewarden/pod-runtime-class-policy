@@ -43,3 +43,6 @@ endif
 
 annotate:
 	kwctl annotate -m metadata.yml -o policy-annotated.wasm policy.wasm
+
+e2e-tests:
+	bats e2e.bats

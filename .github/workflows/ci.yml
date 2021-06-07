@@ -58,15 +58,12 @@ jobs:
           ./kwctl annotate -m metadata.yml -o policy-annotated.wasm policy.wasm
           mv policy-annotated.wasm policy.wasm
 
-      # TODO: uncomment once e2e tests are implemented
       #############################
       # Test Wasm module
       #############################
-      #- name: run e2e tests
-      #  run: |
-      #    chmod 755 policy-testdrive-linux-amd64
-      #    ln -s policy-testdrive-linux-amd64 policy-testdrive
-      #    PATH=${PWD}:${PATH} make e2e-tests
+      - name: run e2e tests
+        run: |
+          PATH=${PWD}:${PATH} make e2e-tests
 
       #############################
       # Upload policy as an artifact
