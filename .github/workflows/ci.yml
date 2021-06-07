@@ -21,13 +21,11 @@ jobs:
         with:
           shell-action: carton test
 
-      - name: Download policy-testdrive
-        uses: i3h/download-release-asset@v1
-        with:
-          owner: kubewarden
-          repo: policy-server
-          tag: v0.1.1
-          file: policy-testdrive-linux-amd64
+      - name: Download kwctl
+        run: |
+          curl -L https://github.com/kubewarden/kwctl/releases/download/${{env.KWCTL_VERSION}}/kwctl-linux-amd64.zip -o kwctl.zip
+          unzip kwctl.zip
+          chmod 755 kwctl
 
       - name: Setup BATS
         uses: mig4/setup-bats@v1
@@ -54,6 +52,11 @@ jobs:
           sudo chmod 777 build/wasm32-unknown-wasi/release/Policy.wasm
           wasm-strip build/wasm32-unknown-wasi/release/Policy.wasm
           wasm-opt -Os build/wasm32-unknown-wasi/release/Policy.wasm -o policy.wasm
+
+      - name: Annotate Wasm module
+        run: |
+          ./kwctl annotate -m metadata.yml -o policy-annotated.wasm policy.wasm
+          mv policy-annotated.wasm policy.wasm
 
       # TODO: uncomment once e2e tests are implemented
       #############################
@@ -96,27 +99,22 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download wasm-to-oci
-        uses: i3h/download-release-asset@v1
-        with:
-          owner: engineerd
-          repo: wasm-to-oci
-          tag: v0.1.1
-          file: linux-amd64-wasm-to-oci
-      - name: fix wasm-to-oci permissions
+      - name: Download kwctl
         run: |
-          chmod 755 linux-amd64-wasm-to-oci
+          curl -L https://github.com/kubewarden/kwctl/releases/download/${{env.KWCTL_VERSION}}/kwctl-linux-amd64.zip -o kwctl.zip
+          unzip kwctl.zip
+          chmod 755 kwctl
 
       - name: Publish Wasm policy artifact to OCI registry with the 'latest' tag
         if: startsWith(github.ref, 'refs/heads/')
         run: |
-          ./linux-amd64-wasm-to-oci push policy.wasm ${OCI_TARGET}:latest
+          ./kwctl push -p policy.wasm ${OCI_TARGET}:latest
 
       - name: Publish Wasm policy artifact to OCI registry with the version tag and 'latest'
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           export OCI_TAG=$(echo $GITHUB_REF | sed -e "s|refs/tags/||")
-          ./linux-amd64-wasm-to-oci push policy.wasm ${OCI_TARGET}:${OCI_TAG}
+          ./kwctl push -p policy.wasm ${OCI_TARGET}:${OCI_TAG}
 
   release:
     needs: tests
