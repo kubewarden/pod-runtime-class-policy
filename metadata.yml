@@ -4,6 +4,7 @@ rules:
   resources: ["pods"]
   operations: ["CREATE", "UPDATE"]
 mutating: true
+contextAware: false
 annotations:
   io.kubewarden.policy.title: pod-runtime-class
   io.kubewarden.policy.description: Policy that controls the usage of Pod runtimeClass
