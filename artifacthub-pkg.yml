@@ -2,7 +2,7 @@
 version: 0.1.4
 name: pod-runtime
 displayName: Pod Runtime
-createdAt: '2022-07-19T16:05:04+02:00'
+createdAt: '2023-01-19T14:46:21+02:00'
 description: Control Pod runtimeClass usage
 license: Apache-2.0
 homeURL: https://github.com/kubewarden/pod-runtime-class-policy
@@ -32,3 +32,36 @@ annotations:
   kubewarden/resources: Pod
   kubewarden/mutation: true
   kubewarden/contextAware: false
+  kubewarden/rules: |
+    rules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      resources: ["pods"]
+      operations: ["CREATE", "UPDATE"]
+  kubewarden/questions-ui: |
+    questions:
+    - default: []
+      description: >-
+        This policy can be used to inspect `CREATE` and `UPDATE` requests of `Pod`
+        resources, and can be configured to replace a non-valid runtime with a
+        fall-back one.
+      tooltip: Give the explicit request to use a specific runtime.
+      group: Settings
+      label: Reserved Runtimes
+      required: false
+      type: array[
+      variable: reservedRuntimes
+    - default: ''
+      tooltip: Replace a non-valid runtime with a fall-back.
+      group: Settings
+      label: Fallback runtime
+      required: false
+      type: string
+      variable: fallbackRuntime
+    - default: true
+      tooltip: Prevent the usage of the default runtime.
+      group: Settings
+      label: Default runtime reserved
+      required: false
+      type: boolean
+      variable: defaultRuntimeReserved
