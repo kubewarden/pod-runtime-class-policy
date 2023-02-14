@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/zoul/generic-json-swift.git",
         "state": {
           "branch": null,
-          "revision": "a137894b2a217abe489cdf1ea287e6f7819b1051",
-          "version": "2.0.1"
+          "revision": "0a06575f4038b504e78ac330913d920f1630f510",
+          "version": "2.0.2"
         }
       },
       {
@@ -15,8 +15,17 @@
         "repositoryURL": "https://github.com/kubewarden/policy-sdk-swift.git",
         "state": {
           "branch": null,
-          "revision": "feaf04f18c60174623a13d5938f3a432f387c9a2",
-          "version": "0.1.5"
+          "revision": "59cc979fa9994f1653d3d3e3dd3072188b2c0a18",
+          "version": "0.1.6"
+        }
+      },
+      {
+        "package": "swift-log",
+        "repositoryURL": "https://github.com/apple/swift-log.git",
+        "state": {
+          "branch": null,
+          "revision": "32e8d724467f8fe623624570367e3d50c5638e46",
+          "version": "1.5.2"
         }
       },
       {
