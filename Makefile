@@ -1,5 +1,5 @@
 CONTAINER_RUNTIME ?= docker
-CONTAINER_IMAGE := "ghcr.io/swiftwasm/swiftwasm-action:5.3"
+CONTAINER_IMAGE := "ghcr.io/swiftwasm/swiftwasm-action:5.7"
 
 build:
 ifndef CONTAINER_RUNTIME
@@ -20,7 +20,8 @@ ifndef CONTAINER_RUNTIME
 	@printf "Please install either docker or podman"
 	exit 1
 endif
-	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && carton test"
+	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && swift build -c debug --product pod-runtime-class-policyPackageTests -Xswiftc -color-diagnostics --triple wasm32-unknown-wasi"
+	wasmtime run --trap-unknown-imports .build/wasm32-unknown-wasi/debug/pod-runtime-class-policyPackageTests.wasm
 
 clean:
 	sudo rm -rf .build

@@ -2,5 +2,21 @@ on: [push, pull_request]
 name: Continuous integration
 jobs:
   test:
-    name: run tests and linters
-    uses: kubewarden/github-actions/.github/workflows/reusable-test-policy-swift.yml@v1
+    runs-on: ubuntu-latest
+    steps:
+    - name: Use wasmtime 5.0.0
+      uses: mwilliamson/setup-wasmtime-action@v2
+      with:
+        wasmtime-version: "5.0.0"
+    -
+      uses: actions/checkout@v3
+    -
+      name: Build unit tests
+      uses: swiftwasm/swiftwasm-action@v5.7
+      with:
+        shell-action: swift build -c debug --product pod-runtime-class-policyPackageTests -Xswiftc -color-diagnostics --triple wasm32-unknown-wasi
+    -
+      name: Run unit tests
+      run: |
+        wasmtime run --trap-unknown-imports .build/wasm32-unknown-wasi/debug/pod-runtime-class-policyPackageTests.wasm
+
