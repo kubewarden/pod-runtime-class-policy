@@ -1,67 +1,50 @@
----
-version: 0.1.4
+# Kubewarden Artifacthub Package config
+#
+# Use this config to submit the policy to https://artifacthub.io.
+#
+# This config can be saved to its default location with:
+#   kwctl scaffold artifacthub > artifacthub-pkg.yml 
+version: 0.1.4-11-gd2e715c
 name: pod-runtime
 displayName: Pod Runtime
-createdAt: '2023-01-19T14:46:21+02:00'
-description: Control Pod runtimeClass usage
+createdAt: 2023-03-21T15:22:29.105948507Z
+description: Policy that controls the usage of Pod runtimeClass
 license: Apache-2.0
 homeURL: https://github.com/kubewarden/pod-runtime-class-policy
 containersImages:
 - name: policy
-  image: ghcr.io/kubewarden/policies/pod-runtime:v0.1.4
-install: |
-  The policy can be obtained using [`kwctl`](https://github.com/kubewarden/kwctl/):
-
-  ```console
-  kwctl pull ghcr.io/kubewarden/policies/pod-runtime:v0.1.4
-  ```
+  image: ghcr.io/kubewarden/policies/pod-runtime:v0.1.4-11-gd2e715c
 keywords:
 - pod
 - runtime
 - container runtime
 links:
 - name: policy
-  url: https://github.com/kubewarden/pod-runtime-class-policy/releases/download/v0.1.4/policy.wasm
+  url: https://github.com/kubewarden/pod-runtime-class-policy/releases/download/v0.1.4-11-gd2e715c/policy.wasm
 - name: source
   url: https://github.com/kubewarden/pod-runtime-class-policy
+install: |
+  The policy can be obtained using [`kwctl`](https://github.com/kubewarden/kwctl):
+  ```console
+  kwctl pull ghcr.io/kubewarden/policies/pod-runtime:v0.1.4-11-gd2e715c
+  ```
+maintainers:
+- name: Kubewarden developers
+  email: cncf-kubewarden-maintainers@lists.cncf.io
 provider:
   name: kubewarden
 recommendations:
 - url: https://artifacthub.io/packages/helm/kubewarden/kubewarden-controller
 annotations:
+  kubewarden/mutation: 'true'
   kubewarden/resources: Pod
-  kubewarden/mutation: true
-  kubewarden/contextAware: false
   kubewarden/rules: |
-    rules:
-    - apiGroups: [""]
-      apiVersions: ["v1"]
-      resources: ["pods"]
-      operations: ["CREATE", "UPDATE"]
-  kubewarden/questions-ui: |
-    questions:
-    - default: []
-      description: >-
-        This policy can be used to inspect `CREATE` and `UPDATE` requests of `Pod`
-        resources, and can be configured to replace a non-valid runtime with a
-        fall-back one.
-      tooltip: Give the explicit request to use a specific runtime.
-      group: Settings
-      label: Reserved Runtimes
-      required: false
-      type: array[
-      variable: reservedRuntimes
-    - default: ''
-      tooltip: Replace a non-valid runtime with a fall-back.
-      group: Settings
-      label: Fallback runtime
-      required: false
-      type: string
-      variable: fallbackRuntime
-    - default: true
-      tooltip: Prevent the usage of the default runtime.
-      group: Settings
-      label: Default runtime reserved
-      required: false
-      type: boolean
-      variable: defaultRuntimeReserved
+    - apiGroups:
+      - ''
+      apiVersions:
+      - v1
+      resources:
+      - pods
+      operations:
+      - CREATE
+      - UPDATE
