@@ -1,5 +1,8 @@
 CONTAINER_RUNTIME ?= docker
 CONTAINER_IMAGE := "ghcr.io/swiftwasm/swiftwasm-action:5.3"
+# It's necessary to call cut because kwctl command does not handle version
+# starting with v.
+VERSION ?= $(shell git describe | cut -c2-)
 
 build:
 ifndef CONTAINER_RUNTIME
@@ -24,7 +27,7 @@ endif
 
 clean:
 	sudo rm -rf .build
-	rm -rf policy.wasm
+	rm -rf policy.wasm artifacthub-pkg.yml
 
 release:
 ifndef CONTAINER_RUNTIME
@@ -41,8 +44,16 @@ endif
 	@printf "Optimize Wasm binary, hold on...\n"
 	wasm-opt -Os .build/wasm32-unknown-wasi/release/Policy.wasm -o policy.wasm
 
-annotate:
-	kwctl annotate -m metadata.yml -o policy-annotated.wasm policy.wasm
+artifacthub-pkg.yml: metadata.yml
+	$(warning If you are updating the artifacthub-pkg.yml file for a release, \
+		remember to set the VERSION variable with the proper value. \
+		To use the latest tag, use the following command:  \
+		make VERSION=$$(git describe --tags --abbrev=0 | cut -c2-) annotated-policy.wasm)
+	kwctl scaffold artifacthub \
+	    --metadata-path metadata.yml --version $(VERSION) --output artifacthub-pkg.yml
+
+annotated-policy.wasm: artifacthub-pkg.yml README.md metadata.yml
+	kwctl annotate -m metadata.yml -u README.md -o annotated-policy.wasm policy.wasm
 
 e2e-tests:
 	bats e2e.bats
