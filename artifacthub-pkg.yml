@@ -4,29 +4,29 @@
 #
 # This config can be saved to its default location with:
 #   kwctl scaffold artifacthub > artifacthub-pkg.yml 
-version: 0.1.4-11-gd2e715c
+version: 0.1.5
 name: pod-runtime
 displayName: Pod Runtime
-createdAt: 2023-03-21T15:22:29.105948507Z
+createdAt: 2023-03-24T14:59:40.388769704Z
 description: Policy that controls the usage of Pod runtimeClass
 license: Apache-2.0
 homeURL: https://github.com/kubewarden/pod-runtime-class-policy
 containersImages:
 - name: policy
-  image: ghcr.io/kubewarden/policies/pod-runtime:v0.1.4-11-gd2e715c
+  image: ghcr.io/kubewarden/policies/pod-runtime:v0.1.5
 keywords:
 - pod
 - runtime
 - container runtime
 links:
 - name: policy
-  url: https://github.com/kubewarden/pod-runtime-class-policy/releases/download/v0.1.4-11-gd2e715c/policy.wasm
+  url: https://github.com/kubewarden/pod-runtime-class-policy/releases/download/v0.1.5/policy.wasm
 - name: source
   url: https://github.com/kubewarden/pod-runtime-class-policy
 install: |
   The policy can be obtained using [`kwctl`](https://github.com/kubewarden/kwctl):
   ```console
-  kwctl pull ghcr.io/kubewarden/policies/pod-runtime:v0.1.4-11-gd2e715c
+  kwctl pull ghcr.io/kubewarden/policies/pod-runtime:v0.1.5
   ```
 maintainers:
 - name: Kubewarden developers
