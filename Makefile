@@ -1,59 +1,38 @@
-CONTAINER_RUNTIME ?= docker
-CONTAINER_IMAGE := "ghcr.io/swiftwasm/swiftwasm-action:5.3"
-# It's necessary to call cut because kwctl command does not handle version
-# starting with v.
-VERSION ?= $(shell git describe | cut -c2-)
+SOURCE_FILES := $(shell test -e src/ && find src -type f)
+VERSION := $(shell sed --posix -n 's,^version = \"\(.*\)\",\1,p' Cargo.toml)
 
-build:
-ifndef CONTAINER_RUNTIME
-	@printf "Please install either docker or podman"
-	exit 1
-endif
-	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && swift build --triple wasm32-unknown-wasi"
+policy.wasm: $(SOURCE_FILES) Cargo.*
+	cargo build --target=wasm32-wasi --release
+	cp target/wasm32-wasi/release/*.wasm policy.wasm
 
-shell:
-ifndef CONTAINER_RUNTIME
-	@printf "Please install either docker or podman"
-	exit 1
-endif
-	$(CONTAINER_RUNTIME) run --rm -ti -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE)
-
-test:
-ifndef CONTAINER_RUNTIME
-	@printf "Please install either docker or podman"
-	exit 1
-endif
-	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && carton test"
-
-clean:
-	sudo rm -rf .build
-	rm -rf policy.wasm artifacthub-pkg.yml
-
-release:
-ifndef CONTAINER_RUNTIME
-	@printf "Please install either docker or podman"
-	exit 1
-endif
-	@printf "Build WebAssembly module"
-	$(CONTAINER_RUNTIME) run --rm -v $(PWD):/code --entrypoint /bin/bash $(CONTAINER_IMAGE) -c "cd /code && swift build -c release --triple wasm32-unknown-wasi"
-
-	@printf "Strip Wasm binary\n"
-	sudo chmod 777 .build/wasm32-unknown-wasi/release/Policy.wasm
-	wasm-strip .build/wasm32-unknown-wasi/release/Policy.wasm
-
-	@printf "Optimize Wasm binary, hold on...\n"
-	wasm-opt -Os .build/wasm32-unknown-wasi/release/Policy.wasm -o policy.wasm
-
-artifacthub-pkg.yml: metadata.yml
+artifacthub-pkg.yml: metadata.yml Cargo.toml
 	$(warning If you are updating the artifacthub-pkg.yml file for a release, \
-		remember to set the VERSION variable with the proper value. \
-		To use the latest tag, use the following command:  \
-		make VERSION=$$(git describe --tags --abbrev=0 | cut -c2-) annotated-policy.wasm)
-	kwctl scaffold artifacthub \
-	    --metadata-path metadata.yml --version $(VERSION) --output artifacthub-pkg.yml
+	  remember to set the VERSION variable with the proper value. \
+	  To use the latest tag, use the following command:  \
+	  make VERSION=$$(git describe --tags --abbrev=0 | cut -c2-) annotated-policy.wasm)
+	kwctl scaffold artifacthub --metadata-path metadata.yml --version $(VERSION) \
+		--questions-path questions-ui.yml --output artifacthub-pkg.yml
 
-annotated-policy.wasm: artifacthub-pkg.yml README.md metadata.yml
+annotated-policy.wasm: policy.wasm metadata.yml artifacthub-pkg.yml
 	kwctl annotate -m metadata.yml -u README.md -o annotated-policy.wasm policy.wasm
 
-e2e-tests:
+.PHONY: fmt
+fmt:
+	cargo fmt --all -- --check
+
+.PHONY: lint
+lint:
+	cargo clippy -- -D warnings
+
+.PHONY: e2e-tests
+e2e-tests: annotated-policy.wasm
 	bats e2e.bats
+
+.PHONY: test
+test: fmt lint
+	cargo test
+
+.PHONY: clean
+clean:
+	cargo clean
+	rm -f policy.wasm annotated-policy.wasm artifacthub-pkg.yml
