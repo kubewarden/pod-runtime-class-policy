@@ -137,13 +137,3 @@ reservedRuntimes:
 fallbackRuntime: containerd-kata
 defaultRuntimeReserved: true
 ```
-
-# Obtain policy
-
-The policy is automatically published as an OCI artifact inside of
-[this](https://github.com/orgs/chimera-kube/packages/container/package/policies%2Fpod-runtime)
-container registry:
-
-# Using the policy
-
-The easiest way to use this policy is through the [kubewarden-controller](https://github.com/kubewarden/kubewarden-controller).
