@@ -27,7 +27,7 @@ fn mutate_or_reject(
         new_pod_spec.runtime_class_name = Some(fallback_runtime.to_string());
         return mutate_pod_spec_from_request(validation_request, new_pod_spec);
     }
-    return reject_request(Some(error_message), None, None, None);
+    reject_request(Some(error_message), None, None, None)
 }
 
 fn validate(payload: &[u8]) -> CallResult {
@@ -88,17 +88,16 @@ mod tests {
         fallback_runtime: Option<String>,
     ) -> Settings {
         Settings {
-            reserved_runtimes: reserved_runtimes,
+            reserved_runtimes,
             default_runtime_reserved: Some(default_runtime_reserved),
-            fallback_runtime: fallback_runtime,
-            ..Default::default()
+            fallback_runtime,
         }
     }
 
     fn create_admission_request(runtime_class_name: Option<String>) -> KubernetesAdmissionRequest {
         let pod = serde_json::to_value(Pod {
             spec: Some(PodSpec {
-                runtime_class_name: runtime_class_name,
+                runtime_class_name,
                 ..Default::default()
             }),
             ..Default::default()
