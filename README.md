@@ -1,3 +1,6 @@
+[![Kubewarden Policy Repository](https://github.com/kubewarden/community/blob/main/badges/kubewarden-policies.svg)](https://github.com/kubewarden/community/blob/main/REPOSITORIES.md#policy-scope)
+[![Stable](https://img.shields.io/badge/status-stable-brightgreen?style=for-the-badge)](https://github.com/kubewarden/community/blob/main/REPOSITORIES.md#stable)
+
 Continuous integration | License
  -----------------------|--------
 [![CI](https://github.com/kubewarden/pod-runtime-class-policy/actions/workflows/test.yml/badge.svg)](https://github.com/kubewarden/pod-runtime-class-policy/actions/workflows/test.yml) | [![License: Apache 2.0](https://img.shields.io/badge/License-Apache2.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
