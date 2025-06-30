@@ -18,8 +18,7 @@ impl kubewarden::settings::Validatable for Settings {
         if let Some(fallback_runtime) = &self.fallback_runtime {
             if self.reserved_runtimes.contains(fallback_runtime) {
                 return Err(format!(
-                    "fallback runtime {} cannot be part of the reserved runtimes",
-                    fallback_runtime
+                    "fallback runtime {fallback_runtime} cannot be part of the reserved runtimes"
                 ));
             }
         }

@@ -43,7 +43,7 @@ fn validate(payload: &[u8]) -> CallResult {
                 return mutate_or_reject(
                     validation_request,
                     &pod_spec,
-                    format!("runtime '{}' is reserved", runtime_class_name),
+                    format!("runtime '{runtime_class_name}' is reserved"),
                 );
             }
         }
